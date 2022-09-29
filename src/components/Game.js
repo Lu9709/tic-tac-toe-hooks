@@ -3,27 +3,43 @@ import {useState} from "react";
 import {calculateWinner} from "../util";
 
 export const Game = () => {
-  const defaultSquares = [{ square: Array(9).fill(null)}]
+  const defaultSquares = [{ squares: Array(9).fill(null)}]
   const [history, setHistory] = useState(defaultSquares)
   const [xIsNext, setXIsNext] = useState(true)
-  const current = history[history.length - 1]
-  const winner = calculateWinner(current.square)
+  const [stepNumber, setStepNumber] = useState(0)
+  const current = history[stepNumber]
+  const winner = calculateWinner(current.squares)
   const status = winner ? 'Winner is ' + winner :'Next player: ' + (xIsNext ? 'X' : 'O')
+  const jumpTo = (step) => {
+    setStepNumber(step)
+    setXIsNext((step % 2) === 0)
+  }
+  const moves = history.map((step, move) => {
+    const desc = move ? 'Go to move #' + move : 'Go to game start';
+    return (
+      <li key={move}>
+        <button onClick={()=> jumpTo(move)}>{desc}</button>
+      </li>
+    )
+  })
   const handleClick = (i) => {
-    if(winner || current.square[i]) return
-    const square = current.square.slice()
-    square[i] = xIsNext ? 'X' : 'O'
-    setHistory(history.concat({ square }))
+    const historyList = history.slice(0, stepNumber + 1)
+    const current = historyList[historyList.length - 1]
+    const squares = current.squares.slice()
+    if(winner || squares[i]) return
+    squares[i] = xIsNext ? 'X' : 'O'
+    setHistory(historyList.concat({ squares }))
     setXIsNext(!xIsNext)
+    setStepNumber(historyList.length)
   }
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={current.square} onClick={(i)=> handleClick(i)} />
+        <Board squares={current.squares} onClick={(i)=> handleClick(i)} />
       </div>
       <div className="game-info">
         <div className="status">{status}</div>
-        <ol>{/* TODO */}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   )
