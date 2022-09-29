@@ -2,22 +2,18 @@ import {Square} from "./Square";
 
 export const Board = (props) => {
   const { squares, onClick } = props
-  const renderSquare = (i) => <Square value={squares[i]} onClick={() => onClick(i)}/>
+  const renderSquare = (start) => {
+    return (
+      <div className="board-row">{
+        Array.from({ length: 3 }).map((item, index) => {
+         return <Square key={start + index} value={squares[start + index]} onClick={() => onClick(start + index)}/>
+        })
+      }</div>
+    )
+  }
   return <>
-    <div className="board-row">
-      { renderSquare(0) }
-      { renderSquare(1) }
-      { renderSquare(2) }
-    </div>
-    <div className="board-row">
-      { renderSquare(3) }
-      { renderSquare(4) }
-      { renderSquare(5) }
-    </div>
-    <div className="board-row">
-      { renderSquare(6) }
-      { renderSquare(7) }
-      { renderSquare(8) }
-    </div>
+    { renderSquare(0) }
+    { renderSquare(3) }
+    { renderSquare(6) }
   </>
 }
